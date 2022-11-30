@@ -14,7 +14,7 @@ class UsersController {
 				throw { name: "WrongPassword" };
 			}
 
-			const token = sign({user: { id: user.id, email: user.email }});
+			const token = sign({user: { id: user.id, email: user.email, role: user.role}});
 			res.status(200).json({ token: token});
 		} catch (error) {
 			next(error);
@@ -47,7 +47,7 @@ class UsersController {
 			
 			const result = await User.update({
 				full_name, email
-			}, { where: { id }, returning: true });
+			}, { where: { id }, returning: true, hooks: false });
 			res.json(result[1]);
 		} catch (err) {
 			next(err)
@@ -68,6 +68,29 @@ class UsersController {
 			}
 			await User.destroy({ where: { id } })
 			res.json({ message: "Your account has been successfully deleted" })
+		} catch (err) {
+			next(err)
+		}
+	}
+
+	static async topUp(req, res, next) {
+		try {
+			let { balance } = req.body;
+			const { id } = req.user;
+			const user = await User.findOne(
+				{ where: { id } }
+			);
+
+			if (!user) {
+				throw { name: "ErrNotFound" }
+			} else if (user.id !== id) {
+				throw { name: "not allowed" }
+			} 
+			
+			const result = await User.update({
+				balance: user.balance + balance
+			}, { where: { id }, returning: true, hooks: false });
+			res.json(result[1]);
 		} catch (err) {
 			next(err)
 		}
