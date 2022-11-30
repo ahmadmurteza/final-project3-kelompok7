@@ -2,11 +2,18 @@
 const {
   Model
 } = require('sequelize');
-const { hash } = require("./../helpers/hash");
-module.exports = (sequelize, DataTypes) => {
-  class Category extends Model {
-    static associate(models) {
 
+const { hash } = require("./../helpers/hash");
+
+module.exports = (sequelize, DataTypes) => {
+   class Category extends Model {
+    static associate(models) {
+      Category.hasMany(models.Product,{
+        as:"Product",
+        foreignKey:"CategoryId",
+        onDelete: 'cascade',
+        hooks:true
+      });
     }
   }
   Category.init({
@@ -59,8 +66,28 @@ module.exports = (sequelize, DataTypes) => {
           },
         },
       },
+      validate: {
+        notNull: {
+          msg: "Sold product amount cannot be omitted",
+        },
+        notEmpty: {
+          msg: "Sold product amount cannot be an empty string",
+        },
+        isNumeric: {
+          msg: "Sold product amount format must be numeric"
+        }
+      },
+    }
+  )},{
+    hooks: {
+      beforeValidate(user) {
+        user.sold_product_amount = 0;
+      }
+    },
     sequelize,
     modelName: 'Category',
-  });
+  };
   return Category;
-};
+
+ 
+

@@ -1,5 +1,5 @@
 'use strict';
-
+const { hash } = require("./../helpers/hash");
 module.exports = {
   async up(queryInterface, Sequelize) {
 		const timeNow = new Date();
@@ -8,7 +8,7 @@ module.exports = {
 			[
 				{
 					full_name: "ahmad",
-					password: "Pas12345!",
+					password: hash("Pas12345!"),
 					gender: "male",
 					email: "ahmad@gmail.com",
 					role: "admin",

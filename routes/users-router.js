@@ -8,5 +8,6 @@ router.post("/users/register", UsersController.signUp);
 
 router.put("/users", authenticationMiddleware, UsersController.updateUser);
 router.delete("/users", authenticationMiddleware, UsersController.deleteUser);
+router.patch("/users/topup", authenticationMiddleware, UsersController.topUp);
 
 module.exports = router;
